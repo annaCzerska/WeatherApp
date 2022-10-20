@@ -1,23 +1,17 @@
 package com.example.weatherapp;
-
-
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-
-import com.amplifyframework.AmplifyException;
-import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
-import com.amplifyframework.geo.location.AWSLocationGeoPlugin;
-import com.amplifyframework.core.Amplify;
-import com.amplifyframework.geo.models.Place;
-import com.amplifyframework.geo.maplibre.view.MapLibreView;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import 	java.util.Calendar;
 import java.util.Date;
@@ -42,11 +35,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
-    double lat;
-    double lon;
-    double newLat;
-    double newLon;
-    TextView txtLocalization;
+
+    TextView txtLocation;
     TextView todayTemperature, todayTitle, tomorrowTitle, in2daysTitle, in3daysTitle, in4daysTitle, in5daysTitle, in6daysTitle, txtWind, txtRain, txtDescription, txtPressure, txtFeelsLike, txtWindDirection;
     TextView txtIn3h, txtIn6h, txtIn9h, txtIn12h, txtIn15h;
     TextView txtMinMaxTmp, txtIn3hTemp, txtIn6hTemp, txtIn9hTemp, txtIn12hTemp, txtIn15hTemp;
@@ -75,44 +65,13 @@ public class MainActivity extends AppCompatActivity {
 
     private final String url = "https://api.openweathermap.org/data/3.0/onecall?";
     String weatherAPI = BuildConfig.WEATHER_API_KEY;
-    private final String autocomplete_url = "https://api.geoapify.com/v1/geocode/autocomplete?text=";
-    String autocompleteAPI = BuildConfig.AUTOCOMPLETE_ADRESS_KEY;
 
-
-
-
-    // waw
-    //double lat = 52.15;
-    //double lon = 21.02;
-
-    //Mordor
-    //53.824719268576104, 19.435643984814238
-    //double lat = 53.824719268576104;
-    //double lon = 19.435643984814238;
-
-
-    //oklahoma
-    //double lat = 35.64;
-    //double lon = -97.5;
-
-    //somewhere where it's cold
-    //double lat = 79.311;
-    //double lon = 100.978;
-
-    //double lat = 61.590;
-    //double lon = 5.460;
-
-
-    //68.90966652952739, -179.5023577388172
-    //35.63774254007427, -97.49534013252476
-    //52.30105354588824, 6.785154250981913
-    //60.32451617822995, -123.2810208556727
-    //59.77330739209392, -162.00865417934017
+    double lat = 52.15;
+    double lon = 21.02;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         setContentView(R.layout.activity_main);
         if (getSupportActionBar() != null) {
@@ -123,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         txtWind = findViewById(R.id.txtWind); txtTomorrowWind = findViewById(R.id.txtTomorrowWind);
         txtRain = findViewById(R.id.txtRain); txtTomorrowRain = findViewById(R.id.txtTomorrowRain);
         txtDescription = findViewById(R.id.txtDescription); txtTomorrowDescription = findViewById(R.id.txtTomorrowDescription);
-        //todayTemperature.setText("20" + '\u00B0' + "C");
         txtPressure = findViewById(R.id.txtPressure); txtTomorrowPressure = findViewById(R.id.txtTomorrowPressure);
         txtFeelsLike = findViewById(R.id.txtFeelsLike);
         txtWindDirection = findViewById(R.id.txtWindDirection); txtTomorrowWindDirection = findViewById(R.id.txtTomorrowWindDeg);
@@ -177,39 +135,18 @@ public class MainActivity extends AppCompatActivity {
         txtAlert = findViewById(R.id.txtAlert);
         iconHourlyRain = findViewById(R.id.iconHourlyRain);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-        txtLocalization = findViewById(R.id.txtLocalization);
-
-
-        //lat = 52.15;
-        //lon = 21.02;
-        //newLat = 1234;
-        //newLon = 1234;
-        /*
-        if (newLat != 0.0 && newLon != 0.0){
-            lat = newLat;
-            lon = newLon;
-            Log.i("MyWeatherApp: " , "lat is: " + lat );
-            Log.i("MyWeatherApp: " , "lon is: " + lon );
-        }
-
-         */
-        MapActivity getLatlon = new MapActivity();
-        lat = getLatlon.getLat();
-        lon = getLatlon.getLon();
-        Log.i("MyWeatherApp: " , "lat is: " + lat );
-        Log.i("MyWeatherApp: " , "lon is: " + lon );
-
+        txtLocation = findViewById(R.id.txtLocation);
+        
         getWeatherInfo();
 
-        txtLocalization.setOnClickListener(new View.OnClickListener() {
+        txtLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openMapActivity();
+                Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                startForResult.launch(intent);
             }
         });
 
-
-        //TODO Maybe add refresh button
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -220,23 +157,28 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
+// opening new activity with map to search for new location and getting lat lon as result
     public void openMapActivity() {
         Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
     }
-    /*
-    public void setLat(double Lat){
-        this.newLat = Lat;
-    }
-    public void setLon(double Lon){
-        this.newLon = Lon;
-    }
-
-     */
-
-
-
+    ActivityResultLauncher<Intent> startForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if(result != null && result.getResultCode() == RESULT_OK){
+                if(result.getData() != null &&
+                        result.getData().getDoubleExtra("LAT1", 52.15) != 52.15 &&
+                        result.getData().getDoubleExtra("LON1", 21.02) != 21.02 &&
+                        result.getData().getStringExtra(MapActivity.PLACE_LABEL) != null){
+                    lat = result.getData().getDoubleExtra("LAT1", 52.15);
+                    lon = result.getData().getDoubleExtra("LON1", 21.02);
+                    txtLocation.setText(result.getData().getStringExtra(MapActivity.PLACE_LABEL));
+                    getWeatherInfo();
+                    Log.i("MyWeatherApp: " , "Changed lat is: " + lat );
+                    Log.i("MyWeatherApp: " , "Changed lon is: " + lon );
+                }
+            }
+        }
+    });
 
 
     public void getWeatherInfo() {
@@ -244,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, requestUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //Log.d("response", response);
                 try {
                     JSONObject jsonResponse = new JSONObject(response);
                     String timeZone = jsonResponse.getString("timezone");
@@ -274,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
                             txtRain.setText(" " + currentSnow + "mm");
                         }
                     }
+                    //current weather conditions
                     long currentTime = jsonObjectCurrent.getLong("dt");
                     long currentTemp = Math.round(jsonObjectCurrent.getDouble("temp"));
                     long currentFeelsLike = Math.round(jsonObjectCurrent.getDouble("feels_like"));
@@ -1088,7 +1030,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+// time converter
     public String unixConverter(long time, String timeZone){
         Date date = new Date(time*1000L);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -1097,7 +1039,7 @@ public class MainActivity extends AppCompatActivity {
         return newTime;
     }
 
-
+// setting titles for all tiles depending on time zone of current location
     void setTitles (String timeZone) {
         todayTitle = findViewById(R.id.txtToday);
         tomorrowTitle = findViewById(R.id.txtTomorrow);
@@ -1137,7 +1079,7 @@ public class MainActivity extends AppCompatActivity {
             in6daysTitle.setText(dayTxt6);
         }
 
-
+// wind direction converter from degree to name
         public String setWindDirection(int windDegree){
             String direction = "";
             if(windDegree>=0 && windDegree<=23 || windDegree>=337 && windDegree<=360){
@@ -1159,6 +1101,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return direction;
         }
+        // setting icons on tiles depending on current weather
         public static int getImageId(Context context, String imageName){
         return context.getResources().getIdentifier("drawable/_" + imageName, null, context.getPackageName());
         }

@@ -12,25 +12,20 @@ import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
 import com.amplifyframework.geo.location.AWSLocationGeoPlugin;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.geo.models.Coordinates;
-import com.amplifyframework.geo.models.CountryCode;
-import com.amplifyframework.geo.models.Place;
 import com.amplifyframework.geo.maplibre.view.AmplifyMapView;
-import com.amplifyframework.geo.options.GeoSearchByTextOptions;
-
-import java.util.Collections;
 
 
 public class MapActivity extends AppCompatActivity {
-    double lat = 52.15;
-    double lon = 21.02;
-    TextView txtLocalization;
+    double lat;
+    double lon;
+    public static final String PLACE_LABEL = "Warsaw, Poland";
+    TextView txtLocation;
     private AmplifyMapView mapView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        txtLocalization = findViewById(R.id.txtLocalization);
+        txtLocation = findViewById(R.id.txtLocation);
         try {
             Amplify.addPlugin(new AWSCognitoAuthPlugin());
             Amplify.addPlugin(new AWSLocationGeoPlugin());
@@ -39,69 +34,31 @@ public class MapActivity extends AppCompatActivity {
         } catch (AmplifyException error) {
             Log.e("MyAmplifyApp", "Could not initialize Amplify", error);
         }
-
         setContentView(R.layout.activity_map);
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
         mapView = findViewById(R.id.mapView);
-        //amplifyMapView.autofill();
-
-        GeoSearchByTextOptions options = GeoSearchByTextOptions.builder()
-                .countries(Collections.singletonList(CountryCode.POL))
-                .build();
-
-
-        String searchQuery = "Warszawa";
-
-        Amplify.Geo.searchByText(searchQuery,options,
-                result -> {
-                    for (final Place place : result.getPlaces()) {
-                        Log.i("MyAmplifyApp", place.toString());
-                    }
-                },
-                error -> Log.e("MyAmplifyApp", "Failed to search for " + searchQuery, error)
-        );
-
 
         //TODO amplifyMapView.set
 
         mapView.setOnPlaceSelectListener((place, symbol) -> {
             Log.i("MyAmplifyApp", "The selected place is " + place.getLabel());
             Log.i("MyAmplifyApp", "It is located at " + place.getCoordinates());
-            openMainActivity();
             Coordinates newOne = place.getCoordinates();
             lat = newOne.getLatitude();
             lon = newOne.getLongitude();
+            String placeLabel = place.getLabel();
+            Intent intent = new Intent();
+            intent.putExtra("LAT1", lat);
+            intent.putExtra("LON1", lon);
+            intent.putExtra(PLACE_LABEL, placeLabel);
+            setResult(RESULT_OK, intent);
+            finish();
             Log.i("MyAmplifyApp", "Latitude is: " + lat);
             Log.i("MyAmplifyApp", "Longitude is: " + lon);
-            //MainActivity setLatLon = new MainActivity();
-            //setLatLon.setLat(lat);
-            //setLatLon.setLon(lon);
         });
         Log.i("MyAmplifyApp", "Latitude2 is: " + lat);
         Log.i("MyAmplifyApp", "Longitude2 is: " + lon);
-
-
-
-
         }
-    public void openMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-    public double getLat(){
-        return this.lat;
-    }
-    public double getLon(){
-        return this.lon;
-    }
-
-
-
 }
-
-
-
-
-

@@ -18,10 +18,11 @@
         tools:context=".MainActivity">
 
         <TextView
-            android:id="@+id/txtLocalization"
-            android:layout_width="300dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="30dp"
+            android:id="@+id/txtLocation"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+
             android:backgroundTint="@color/white"
             android:ems="10"
             android:hint="Warsaw"
@@ -32,17 +33,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.023" />
+            app:layout_constraintVertical_bias="0.022" />
 
         <ImageView
             android:id="@+id/iconLocalization"
             android:layout_width="25dp"
             android:layout_height="40dp"
-            app:layout_constraintBottom_toBottomOf="@+id/txtLocalization"
-            app:layout_constraintEnd_toStartOf="@+id/txtLocalization"
+            app:layout_constraintBottom_toBottomOf="@+id/txtLocation"
+            app:layout_constraintEnd_toStartOf="@+id/txtLocation"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/txtLocalization"
+            app:layout_constraintTop_toTopOf="@+id/txtLocation"
             app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/pin" />
 
@@ -55,7 +56,7 @@
             android:textSize="15dp"
             app:layout_constraintEnd_toEndOf="@+id/layoutToday"
             app:layout_constraintStart_toStartOf="@+id/layoutToday"
-            app:layout_constraintTop_toBottomOf="@id/txtLocalization" />
+            app:layout_constraintTop_toBottomOf="@id/txtLocation" />
 
         <RelativeLayout
             android:id="@+id/layoutTomorrow"
