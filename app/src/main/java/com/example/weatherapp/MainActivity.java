@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     TextView txtIn6DPressure, txtIn6DTempMorning, txtIn6DTempDay, txtIn6DTempEve, txtIn6DTempNight, txtIn6DSunrise, txtIn6DSunset;
     TextView txtAlert;
 
-    ImageView todayIcon, iconIn3h, iconIn6h, iconIn9h, iconIn12h, iconIn15h, iconTomorrow, iconTomorrowRain, iconIn2D, iconIn2DRain, iconIn3D, iconIn3DRain, iconIn4D, iconIn4DRain;;
+    ImageView todayIcon, iconIn3h, iconIn6h, iconIn9h, iconIn12h, iconIn15h, iconTomorrow, iconTomorrowRain, iconIn2D, iconIn2DRain, iconIn3D, iconIn3DRain, iconIn4D, iconIn4DRain;
     ImageView iconIn5D, iconIn5DRain, iconIn6D, iconIn6DRain, iconHourlyRain;
 
     SwipeRefreshLayout swipeRefreshLayout;
@@ -155,12 +155,9 @@ public class MainActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
 
-    }
 // opening new activity with map to search for new location and getting lat lon as result
-    public void openMapActivity() {
-        Intent intent = new Intent(this, MapActivity.class);
-    }
     ActivityResultLauncher<Intent> startForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {

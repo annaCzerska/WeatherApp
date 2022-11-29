@@ -3,7 +3,6 @@ package com.example.weatherapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,13 +18,11 @@ public class MapActivity extends AppCompatActivity {
     double lat;
     double lon;
     public static final String PLACE_LABEL = "Warsaw, Poland";
-    TextView txtLocation;
     private AmplifyMapView mapView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        txtLocation = findViewById(R.id.txtLocation);
         try {
             Amplify.addPlugin(new AWSCognitoAuthPlugin());
             Amplify.addPlugin(new AWSLocationGeoPlugin());
